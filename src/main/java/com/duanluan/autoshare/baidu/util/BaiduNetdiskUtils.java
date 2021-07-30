@@ -90,7 +90,7 @@ public class BaiduNetdiskUtils {
       .addHeader(HeaderConstant.X_REQUESTED_WITH, "XMLHttpRequest")
       .get().getBody().toBean(LoginStatusRO.class);
     // 登录状态正常时，重新赋值静态 Cookie
-    if (checkErrno(loginStatusRO, null)) {
+    if (checkErrno(loginStatusRO, null) && !cookie.equals(cookieStr)) {
       cookie = cookieStr;
       return true;
     }
