@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.duanluan</groupId>
+  <artifactId>BaiduNetdiskAutoShare</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <name>BaiduNetdiskAutoShare</name>
+
+  <parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>2.5.2</version>
+    <!-- lookup parent from repository -->
+    <relativePath/>
+  </parent>
+
+  <repositories>
+    <repository>
+      <id>aliyun</id>
+      <url>https://maven.aliyun.com/repository/public</url>
+    </repository>
+    <repository>
+      <id>jitpack.io</id>
+      <url>https://jitpack.io</url>
+    </repository>
+  </repositories>
+  <pluginRepositories>
+    <pluginRepository>
+      <id>aliyun</id>
+      <url>https://maven.aliyun.com/repository/public</url>
+    </pluginRepository>
+  </pluginRepositories>
+
+  <properties>
+    <java.version>1.8</java.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+    <commons-text.version>1.9</commons-text.version>
+    <commons-collections4>4.4</commons-collections4>
+    <fastjson.version>1.2.76</fastjson.version>
+    <okhttps.version>3.1.3</okhttps.version>
+    <!--<okhttp.version>4.9.1</okhttp.version>-->
+    <!--<rxhttp.version>2.6.5</rxhttp.version>-->
+    <!--<rxjava.version>3.0.2</rxjava.version>-->
+    <mybatis-plus.version>3.4.3.1</mybatis-plus.version>
+    <mybatis-plus-generator.version>3.5.0</mybatis-plus-generator.version>
+  </properties>
+  <dependencies>
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-text</artifactId>
+      <version>${commons-text.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-collections4</artifactId>
+      <version>${commons-collections4}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.alibaba</groupId>
+      <artifactId>fastjson</artifactId>
+      <version>${fastjson.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.ejlchina</groupId>
+      <artifactId>okhttps-fastjson</artifactId>
+      <version>${okhttps.version}</version>
+    </dependency>
+    <!--<dependency>-->
+    <!--  <groupId>com.squareup.okhttp3</groupId>-->
+    <!--  <artifactId>okhttp</artifactId>-->
+    <!--  <version>${okhttp.version}</version>-->
+    <!--</dependency>-->
+    <!--<dependency>-->
+    <!--  <groupId>com.github.liujingxing.rxhttp</groupId>-->
+    <!--  <artifactId>rxhttp</artifactId>-->
+    <!--  <version>${rxhttp.version}</version>-->
+    <!--</dependency>-->
+    <!--<dependency>-->
+    <!--  <groupId>com.github.liujingxing.rxhttp</groupId>-->
+    <!--  <artifactId>converter-fastjson</artifactId>-->
+    <!--  <version>${rxhttp.version}</version>-->
+    <!--</dependency>-->
+    <!--<dependency>-->
+    <!--  <groupId>io.reactivex.rxjava3</groupId>-->
+    <!--  <artifactId>rxjava</artifactId>-->
+    <!--  <version>${rxjava.version}</version>-->
+    <!--</dependency>-->
+
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-configuration-processor</artifactId>
+      <optional>true</optional>
+    </dependency>
+
+    <dependency>
+      <groupId>org.mariadb.jdbc</groupId>
+      <artifactId>mariadb-java-client</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.baomidou</groupId>
+      <artifactId>mybatis-plus-boot-starter</artifactId>
+      <version>${mybatis-plus.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.baomidou</groupId>
+      <artifactId>mybatis-plus-generator</artifactId>
+      <version>${mybatis-plus-generator.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-freemarker</artifactId>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>${java.version}</source>
+          <target>${java.version}</target>
+          <encoding>${project.build.sourceEncoding}</encoding>
+        <!--  &lt;!&ndash; 必须 &ndash;&gt;-->
+        <!--  <annotationProcessorPaths>-->
+        <!--    <path>-->
+        <!--      <groupId>com.github.liujingxing.rxhttp</groupId>-->
+        <!--      <artifactId>rxhttp-compiler</artifactId>-->
+        <!--      <version>${rxhttp.version}</version>-->
+        <!--    </path>-->
+        <!--  </annotationProcessorPaths>-->
+
+        <!--  &lt;!&ndash; RxJava 注解处理器，非必须 &ndash;&gt;-->
+        <!--  <annotationProcessors>-->
+        <!--    <annotationProcessor>-->
+        <!--      com.rxhttp.compiler.maven.AnnotationRxJava3Processor-->
+        <!--    </annotationProcessor>-->
+        <!--  </annotationProcessors>-->
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>

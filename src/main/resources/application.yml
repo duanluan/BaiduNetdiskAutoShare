@@ -1,0 +1,75 @@
+server:
+  # 压缩
+  compression:
+    enabled: true
+    # 资源类型
+    mime-types: application/json
+  tomcat:
+    threads:
+      # 最小线程
+      min-spare: 20
+      # 最大线程
+      max: 200
+    # 连接超时时间
+    connection-timeout: 5000
+
+spring:
+  application:
+    # 应用名
+    name: BaiduNetdiskAutoShare
+  # 数据源
+  datasource:
+    # 驱动类
+    driver-class-name: org.mariadb.jdbc.Driver
+    # 连接池类型
+    type: com.zaxxer.hikari.HikariDataSource
+    # 连接地址
+    url: jdbc:mariadb://csaf.club:3307/baidu_netdisk_auto_share
+    # 用户名
+    username: root
+    # 密码
+    password: Qwe123!@#$%
+  freemarker:
+    settings:
+      # 传统模式：https://blog.csdn.net/achilles12345/article/details/38085225
+      classic_compatible: true
+
+
+# https://baomidou.com/config/
+mybatis-plus:
+  # MyBaits 别名包扫描路径，通过该属性可以给包中的类注册别名，注册后在 Mapper 对应的 XML 文件中可以直接使用类名，而不用使用全限定的类名（即 XML 中调用的时候不用包含包名）
+  type-aliases-package: com.duanluan.*.entity
+  # 枚举类 扫描路径，如果配置了该属性，会将路径下的枚举类进行注入，让实体类字段能够简单快捷的使用枚举属性
+  type-enums-package: com.duanluan.*.enum
+  # MyBatis Mapper 所对应的 XML 文件位置，Maven 多模块项目的扫描路径需以 classpath*: 开头
+  mapper-locations: classpath*:mapper/*.xml
+  configuration:
+    # 允许自动生成主键
+    use-generated-keys: true
+    # 解决值为 null 时 JDBC type 无法识别的问题
+    jdbc-type-for-null: null
+    # SQL 执行器
+    # simple：每执行一次 update 或 select，就开启一个 Statement 对象，用完立刻关闭 Statement 对象
+    # batch：执行 update（没有 select，JDBC 批处理不支持 select），将所有 sql 都添加到批处理中（addBatch ()），等待统一执行（executeBatch ()），它缓存了多个 Statement 对象，每个 Statement 对象都是 addBatch () 完毕后，等待逐一执行 executeBatch () 批处理。返回值为负数
+    # reuse：执行 update 或 select，以 sql 作为 key 查找 Statement 对象，存在就使用，不存在就创建，用完后，不关闭 Statement 对象，而是放置于 Map 内，供下一次使用。简言之，就是重复使用 Statement 对象
+    default-executor-type: reuse
+    # 是否开启自动驼峰命名规则（camel case）映射，即从经典数据库列名 A_COLUMN（下划线命名） 到经典 Java 属性名 aColumn（驼峰命名） 的类似映射。
+    map-underscore-to-camel-case: true
+    # 全局启用或禁用延迟加载。当禁用时，所有关联对象都会即时加载。
+    lazy-loading-enabled: true
+    # 当启用时，有延迟加载属性的对象在被调用时将会完全加载任意属性。否则，每种属性将会按需要加载。
+    aggressive-lazy-loading: false
+  global-config:
+    db-config:
+      # 主键类型
+      id-type: auto
+
+baidu:
+  # 应用 ID
+  app-id: 250528
+  # 通道
+  channel: chunlei
+  # 是否为网页端
+  web: 1
+  # 客户端类型
+  clienttype: 0
