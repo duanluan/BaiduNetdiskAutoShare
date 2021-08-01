@@ -42,4 +42,6 @@ public class Account implements Serializable {
    * Cookie
    */
   private String cookie;
+  private String bdstoken;
+  private String logid;
 }

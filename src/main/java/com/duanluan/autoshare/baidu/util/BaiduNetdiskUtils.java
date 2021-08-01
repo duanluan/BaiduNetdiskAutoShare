@@ -1,5 +1,6 @@
 package com.duanluan.autoshare.baidu.util;
 
+import com.alibaba.fastjson.JSON;
 import com.duanluan.autoshare.baidu.config.BaiduConfig;
 import com.duanluan.autoshare.baidu.constants.ErrnoConstant;
 import com.duanluan.autoshare.baidu.constants.HeaderConstant;
@@ -7,6 +8,7 @@ import com.duanluan.autoshare.baidu.entity.ShareRecord;
 import com.duanluan.autoshare.baidu.entity.ro.BaseRO;
 import com.duanluan.autoshare.baidu.entity.ro.LoginStatusRO;
 import com.duanluan.autoshare.baidu.entity.ro.ShareRecordRO;
+import com.duanluan.autoshare.baidu.entity.ro.ShareSetRO;
 import com.ejlchina.okhttps.FastjsonMsgConvertor;
 import com.ejlchina.okhttps.HTTP;
 import lombok.extern.slf4j.Slf4j;
@@ -14,7 +16,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 百度网盘工具类
@@ -33,6 +37,10 @@ public class BaiduNetdiskUtils {
    * 基础 URL
    */
   private static final String BASE_URL = "https://pan.baidu.com";
+  /**
+   * 用户代理
+   */
+  private static final String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Safari/537.36";
   /**
    * 请求对象
    */
@@ -58,7 +66,7 @@ public class BaiduNetdiskUtils {
           log.error("无效登录，请重新登录！");
         }
       } else if (StringUtils.isNotBlank(errorMsg)) {
-        log.error(errorMsg);
+        log.error(errorMsg + (objRO != null ? objRO.getShowMsg() : ""));
       }
       return false;
     }
@@ -66,10 +74,10 @@ public class BaiduNetdiskUtils {
   }
 
   /**
-   * 登录状态
+   * 登录状态是否有误
    *
    * @param cookieStr Cookie
-   * @return 登录状态是否正常，正常时，重新赋值当前类的静态 Cookie
+   * @return 登录状态是否有误，正常时，重新赋值当前类的静态 Cookie
    */
   public boolean loginStatus(String cookieStr) {
     LoginStatusRO loginStatusRO = HTTP_OBJ.sync("/api/loginStatus" +
@@ -85,7 +93,7 @@ public class BaiduNetdiskUtils {
       .addHeader(HeaderConstant.SEC_FETCH_DEST, "empty")
       .addHeader(HeaderConstant.SEC_FETCH_MODE, "cors")
       .addHeader(HeaderConstant.SEC_FETCH_SITE, "same-origin")
-      .addHeader(HeaderConstant.USER_AGENT, "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Safari/537.36")
+      .addHeader(HeaderConstant.USER_AGENT, USER_AGENT)
       .addHeader(HeaderConstant.X_KL_AJAX_REQUEST, "Ajax_Request")
       .addHeader(HeaderConstant.X_REQUESTED_WITH, "XMLHttpRequest")
       .get().getBody().toBean(LoginStatusRO.class);
@@ -122,12 +130,64 @@ public class BaiduNetdiskUtils {
       .addHeader(HeaderConstant.SEC_FETCH_DEST, "empty")
       .addHeader(HeaderConstant.SEC_FETCH_MODE, "cors")
       .addHeader(HeaderConstant.SEC_FETCH_SITE, "same-origin")
-      .addHeader(HeaderConstant.USER_AGENT, "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Safari/537.36")
+      .addHeader(HeaderConstant.USER_AGENT, USER_AGENT)
       .addHeader(HeaderConstant.X_KL_AJAX_REQUEST, "Ajax_Request")
       .addHeader(HeaderConstant.X_REQUESTED_WITH, "XMLHttpRequest")
       .get().getBody().toBean(ShareRecordRO.class);
     if (checkErrno(shareRecordRO, "获取分享记录失败！")) {
       return shareRecordRO.getList();
+    }
+    return null;
+  }
+
+  /**
+   * 分享
+   *
+   * @param bdstoken
+   * @param logid
+   * @param pwd      密码
+   * @param fsIds    分享的文件 ID 数组
+   * @return 分享链接
+   */
+  public String shareSet(String bdstoken, String logid, String pwd, String[] fsIds) {
+    Map<String, Object> paramMap = new HashMap<>();
+    paramMap.put("channel_list", new String[]{});
+    paramMap.put("period", 0);
+    paramMap.put("pwd", pwd);
+    paramMap.put("schannel", 4);
+    paramMap.put("fid_list", fsIds);
+
+    ShareSetRO shareSetRO = HTTP_OBJ.sync("/share/set" +
+      "?channel=" + baiduConfig.getChannel() +
+      "&clienttype=" + baiduConfig.getClienttype() +
+      "&web=" + baiduConfig.getWeb() +
+      "&channel=" + baiduConfig.getChannel() +
+      "&web=" + baiduConfig.getWeb() +
+      "&app_id=" + baiduConfig.getAppId() +
+      "&bdstoken=" + bdstoken +
+      "&logid=" + logid +
+      "&clienttype=" + baiduConfig.getClienttype())
+      .addBodyPara(paramMap)
+      // 添加请求头
+      .addHeader(HeaderConstant.ACCEPT, "*/*")
+      .addHeader(HeaderConstant.ACCEPT_ENCODING, "gzip, deflate, br")
+      .addHeader(HeaderConstant.ACCEPT_LANGUAGE, "zh-CN,zh;q=0.9,en;q=0.8,zh-TW;q=0.7")
+      .addHeader(HeaderConstant.CONNECTION, "keep-alive")
+      .addHeader(HeaderConstant.CONTENT_LENGTH, String.valueOf(JSON.toJSONString(paramMap).length()))
+      .addHeader(HeaderConstant.CONTENT_TYPE, "application/x-www-form-urlencoded; charset=UTF-8")
+      .addHeader(HeaderConstant.COOKIE, cookie)
+      .addHeader(HeaderConstant.DNT, "1")
+      .addHeader(HeaderConstant.HOST, BASE_URL)
+      .addHeader(HeaderConstant.REFERER, BASE_URL + "/disk/home?_at_=" + System.currentTimeMillis())
+      .addHeader(HeaderConstant.SEC_FETCH_DEST, "empty")
+      .addHeader(HeaderConstant.SEC_FETCH_MODE, "cors")
+      .addHeader(HeaderConstant.SEC_FETCH_SITE, "same-origin")
+      .addHeader(HeaderConstant.USER_AGENT, USER_AGENT)
+      .addHeader(HeaderConstant.X_KL_AJAX_REQUEST, "Ajax_Request")
+      .addHeader(HeaderConstant.X_REQUESTED_WITH, "XMLHttpRequest")
+      .post().getBody().toBean(ShareSetRO.class);
+    if (checkErrno(shareSetRO, "分享失败！")) {
+      return shareSetRO.getLink();
     }
     return null;
   }

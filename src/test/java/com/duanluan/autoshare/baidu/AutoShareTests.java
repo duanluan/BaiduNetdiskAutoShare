@@ -13,6 +13,6 @@ class AutoShareTests {
 
   @Test
   void contextLoads() {
-    autoShareJob.run();
+    autoShareJob.get();
   }
 }

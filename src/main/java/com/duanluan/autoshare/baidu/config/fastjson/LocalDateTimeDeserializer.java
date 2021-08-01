@@ -32,7 +32,7 @@ public class LocalDateTimeDeserializer implements ObjectDeserializer {
       // 时间戳
       if (valObj instanceof Integer) {
         long valInt = ((Integer) valObj).longValue();
-        // 10 位时间戳
+        // 10 位
         if (Long.toString(valInt).length() == 10) {
           valObj = DateUtils.parseLocalDateTime(valInt * 1000);
           return (T) valObj;

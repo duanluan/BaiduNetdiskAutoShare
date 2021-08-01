@@ -41,11 +41,9 @@
     <commons-collections4>4.4</commons-collections4>
     <fastjson.version>1.2.76</fastjson.version>
     <okhttps.version>3.1.3</okhttps.version>
-    <!--<okhttp.version>4.9.1</okhttp.version>-->
-    <!--<rxhttp.version>2.6.5</rxhttp.version>-->
-    <!--<rxjava.version>3.0.2</rxjava.version>-->
     <mybatis-plus.version>3.4.3.1</mybatis-plus.version>
     <mybatis-plus-generator.version>3.5.0</mybatis-plus-generator.version>
+    <rocketmq.version>2.2.0</rocketmq.version>
   </properties>
   <dependencies>
     <dependency>
@@ -78,26 +76,6 @@
       <artifactId>okhttps-fastjson</artifactId>
       <version>${okhttps.version}</version>
     </dependency>
-    <!--<dependency>-->
-    <!--  <groupId>com.squareup.okhttp3</groupId>-->
-    <!--  <artifactId>okhttp</artifactId>-->
-    <!--  <version>${okhttp.version}</version>-->
-    <!--</dependency>-->
-    <!--<dependency>-->
-    <!--  <groupId>com.github.liujingxing.rxhttp</groupId>-->
-    <!--  <artifactId>rxhttp</artifactId>-->
-    <!--  <version>${rxhttp.version}</version>-->
-    <!--</dependency>-->
-    <!--<dependency>-->
-    <!--  <groupId>com.github.liujingxing.rxhttp</groupId>-->
-    <!--  <artifactId>converter-fastjson</artifactId>-->
-    <!--  <version>${rxhttp.version}</version>-->
-    <!--</dependency>-->
-    <!--<dependency>-->
-    <!--  <groupId>io.reactivex.rxjava3</groupId>-->
-    <!--  <artifactId>rxjava</artifactId>-->
-    <!--  <version>${rxjava.version}</version>-->
-    <!--</dependency>-->
 
     <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -132,6 +110,12 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-freemarker</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.rocketmq</groupId>
+      <artifactId>rocketmq-spring-boot-starter</artifactId>
+      <version>${rocketmq.version}</version>
     </dependency>
   </dependencies>
 
