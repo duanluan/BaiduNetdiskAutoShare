@@ -33,10 +33,11 @@ public class BaiduNetdiskUtils {
   @Autowired
   private BaiduConfig baiduConfig;
 
+  private static final String HOST = "pan.baidu.com";
   /**
    * 基础 URL
    */
-  private static final String BASE_URL = "https://pan.baidu.com";
+  private static final String BASE_URL = "https://" + HOST;
   /**
    * 用户代理
    */
@@ -86,9 +87,12 @@ public class BaiduNetdiskUtils {
       "&web=" + baiduConfig.getWeb())
       // 添加请求头
       .addHeader(HeaderConstant.ACCEPT, "application/json, text/plain, */*")
+      // .addHeader(HeaderConstant.ACCEPT_ENCODING, "gzip, deflate, br")
       .addHeader(HeaderConstant.ACCEPT_LANGUAGE, "zh-CN,zh;q=0.9,en;q=0.8,zh-TW;q=0.7")
       .addHeader(HeaderConstant.CONNECTION, "keep-alive")
       .addHeader(HeaderConstant.COOKIE, cookieStr)
+      .addHeader(HeaderConstant.HOST, HOST)
+      // .addHeader(HeaderConstant.REFERER, BASE_URL + "/disk/main?errmsg=Auth+Login+Sucess&errno=0&ssnerror=0&")
       .addHeader(HeaderConstant.REFERER, BASE_URL + "/disk/main")
       .addHeader(HeaderConstant.SEC_FETCH_DEST, "empty")
       .addHeader(HeaderConstant.SEC_FETCH_MODE, "cors")
@@ -98,8 +102,10 @@ public class BaiduNetdiskUtils {
       .addHeader(HeaderConstant.X_REQUESTED_WITH, "XMLHttpRequest")
       .get().getBody().toBean(LoginStatusRO.class);
     // 登录状态正常时，重新赋值静态 Cookie
-    if (checkErrno(loginStatusRO, null) && !cookie.equals(cookieStr)) {
-      cookie = cookieStr;
+    if (checkErrno(loginStatusRO, null)) {
+      if (!cookie.equals(cookieStr)) {
+        cookie = cookieStr;
+      }
       return true;
     }
     return false;
@@ -123,9 +129,12 @@ public class BaiduNetdiskUtils {
       "&order=ctime&desc=1")
       // 添加请求头
       .addHeader(HeaderConstant.ACCEPT, "application/json, text/plain, */*")
+      // .addHeader(HeaderConstant.ACCEPT_ENCODING, "gzip, deflate, br")
       .addHeader(HeaderConstant.ACCEPT_LANGUAGE, "zh-CN,zh;q=0.9,en;q=0.8,zh-TW;q=0.7")
       .addHeader(HeaderConstant.CONNECTION, "keep-alive")
       .addHeader(HeaderConstant.COOKIE, cookie)
+      .addHeader(HeaderConstant.HOST, HOST)
+      // .addHeader(HeaderConstant.REFERER, BASE_URL + "/disk/main?errmsg=Auth+Login+Sucess&errno=0&ssnerror=0&")
       .addHeader(HeaderConstant.REFERER, BASE_URL + "/disk/main")
       .addHeader(HeaderConstant.SEC_FETCH_DEST, "empty")
       .addHeader(HeaderConstant.SEC_FETCH_MODE, "cors")
@@ -149,7 +158,7 @@ public class BaiduNetdiskUtils {
    * @param fsIds    分享的文件 ID 数组
    * @return 分享链接
    */
-  public String shareSet(String bdstoken, String logid, String pwd, String[] fsIds) {
+  public String shareSet(String bdstoken, String logid, String pwd, List<Long> fsIds) {
     Map<String, Object> paramMap = new HashMap<>();
     paramMap.put("channel_list", new String[]{});
     paramMap.put("period", 0);
@@ -170,14 +179,13 @@ public class BaiduNetdiskUtils {
       .addBodyPara(paramMap)
       // 添加请求头
       .addHeader(HeaderConstant.ACCEPT, "*/*")
-      .addHeader(HeaderConstant.ACCEPT_ENCODING, "gzip, deflate, br")
+      // .addHeader(HeaderConstant.ACCEPT_ENCODING, "gzip, deflate, br")
       .addHeader(HeaderConstant.ACCEPT_LANGUAGE, "zh-CN,zh;q=0.9,en;q=0.8,zh-TW;q=0.7")
       .addHeader(HeaderConstant.CONNECTION, "keep-alive")
       .addHeader(HeaderConstant.CONTENT_LENGTH, String.valueOf(JSON.toJSONString(paramMap).length()))
       .addHeader(HeaderConstant.CONTENT_TYPE, "application/x-www-form-urlencoded; charset=UTF-8")
       .addHeader(HeaderConstant.COOKIE, cookie)
-      .addHeader(HeaderConstant.DNT, "1")
-      .addHeader(HeaderConstant.HOST, BASE_URL)
+      .addHeader(HeaderConstant.HOST, HOST)
       .addHeader(HeaderConstant.REFERER, BASE_URL + "/disk/home?_at_=" + System.currentTimeMillis())
       .addHeader(HeaderConstant.SEC_FETCH_DEST, "empty")
       .addHeader(HeaderConstant.SEC_FETCH_MODE, "cors")

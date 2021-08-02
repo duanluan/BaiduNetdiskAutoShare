@@ -1,7 +1,7 @@
 package com.duanluan.autoshare.baidu.mq.consumer;
 
 import com.duanluan.autoshare.baidu.entity.Account;
-import com.duanluan.autoshare.baidu.mq.message.AutoShareRecordMessage;
+import com.duanluan.autoshare.baidu.mq.message.AutoShareMessage;
 import com.duanluan.autoshare.baidu.service.IAccountService;
 import com.duanluan.autoshare.baidu.util.BaiduNetdiskUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -15,11 +15,11 @@ import java.util.List;
 
 @Slf4j
 @RocketMQMessageListener(
-  topic = AutoShareRecordMessage.TOPIC,
-  consumerGroup = "BaiduNetdiskAutoShare-" + AutoShareRecordMessage.TOPIC
+  topic = AutoShareMessage.TOPIC,
+  consumerGroup = "BaiduNetdiskAutoShare-" + AutoShareMessage.TOPIC
 )
 @Component
-public class AutoShareRecordConsumer implements RocketMQListener<AutoShareRecordMessage> {
+public class AutoShareConsumer implements RocketMQListener<AutoShareMessage> {
 
   @Autowired
   private IAccountService accountService;
@@ -27,7 +27,7 @@ public class AutoShareRecordConsumer implements RocketMQListener<AutoShareRecord
   private BaiduNetdiskUtils baiduNetdiskUtils;
 
   @Override
-  public void onMessage(AutoShareRecordMessage message) {
+  public void onMessage(AutoShareMessage message) {
     List<Account> accountList = accountService.list();
     Account account = accountList.get(0);
 

@@ -72,7 +72,8 @@ rocketmq:
   # Producer 配置项
   producer:
     # 生产者分组
-    group: ${spring.application.name}
+#    group: ${spring.application.name}
+    group: BaiduNetdiskAutoShare
     # 发送消息超时时间，单位：毫秒。默认为 3000
     send-message-timeout: 3000
     # 消息压缩阀值，当消息体的大小超过该阀值后，进行消息压缩。默认为 4 * 1024B

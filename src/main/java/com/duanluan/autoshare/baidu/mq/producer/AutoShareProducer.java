@@ -1,39 +1,41 @@
 package com.duanluan.autoshare.baidu.mq.producer;
 
-import com.duanluan.autoshare.baidu.mq.message.AutoShareRecordMessage;
+import com.duanluan.autoshare.baidu.mq.message.AutoShareMessage;
 import org.apache.rocketmq.client.producer.SendCallback;
 import org.apache.rocketmq.client.producer.SendResult;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
-public class AutoShareRecordProducer {
+public class AutoShareProducer {
 
   @Autowired
   private RocketMQTemplate rocketMqTemplate;
 
-  public SendResult syncSend(String[] fsIds) {
+  public SendResult syncSend(List<Long> fsIds) {
     // 创建 AutoShareRecordMessage 消息
-    AutoShareRecordMessage message = new AutoShareRecordMessage();
+    AutoShareMessage message = new AutoShareMessage();
     message.setFsIds(fsIds);
     // 同步发送消息
-    return rocketMqTemplate.syncSend(AutoShareRecordMessage.TOPIC, message);
+    return rocketMqTemplate.syncSend(AutoShareMessage.TOPIC, message);
   }
 
-  public void asyncSend(String[] fsIds, SendCallback callback) {
+  public void asyncSend(List<Long> fsIds, SendCallback callback) {
     // 创建 AutoShareRecordMessage 消息
-    AutoShareRecordMessage message = new AutoShareRecordMessage();
+    AutoShareMessage message = new AutoShareMessage();
     message.setFsIds(fsIds);
     // 异步发送消息
-    rocketMqTemplate.asyncSend(AutoShareRecordMessage.TOPIC, message, callback);
+    rocketMqTemplate.asyncSend(AutoShareMessage.TOPIC, message, callback);
   }
 
-  public void onewaySend(String[] fsIds) {
+  public void onewaySend(List<Long> fsIds) {
     // 创建 AutoShareRecordMessage 消息
-    AutoShareRecordMessage message = new AutoShareRecordMessage();
+    AutoShareMessage message = new AutoShareMessage();
     message.setFsIds(fsIds);
     // oneway 发送消息
-    rocketMqTemplate.sendOneWay(AutoShareRecordMessage.TOPIC, message);
+    rocketMqTemplate.sendOneWay(AutoShareMessage.TOPIC, message);
   }
 }

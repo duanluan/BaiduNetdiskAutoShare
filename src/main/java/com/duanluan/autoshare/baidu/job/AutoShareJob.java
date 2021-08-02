@@ -3,10 +3,11 @@ package com.duanluan.autoshare.baidu.job;
 import com.duanluan.autoshare.baidu.entity.Account;
 import com.duanluan.autoshare.baidu.entity.ShareRecord;
 import com.duanluan.autoshare.baidu.enums.ExpiredTypeEnum;
-import com.duanluan.autoshare.baidu.mq.consumer.AutoShareRecordConsumer;
-import com.duanluan.autoshare.baidu.mq.producer.AutoShareRecordProducer;
+import com.duanluan.autoshare.baidu.mq.consumer.AutoShareConsumer;
+import com.duanluan.autoshare.baidu.mq.producer.AutoShareProducer;
 import com.duanluan.autoshare.baidu.service.IAccountService;
 import com.duanluan.autoshare.baidu.util.BaiduNetdiskUtils;
+import com.duanluan.autoshare.baidu.util.NumberUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.rocketmq.client.producer.SendCallback;
@@ -15,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -29,9 +31,9 @@ public class AutoShareJob {
   @Autowired
   private BaiduNetdiskUtils baiduNetdiskUtils;
   @Autowired
-  private AutoShareRecordProducer autoShareRecordProducer;
+  private AutoShareProducer autoShareProducer;
   @Autowired
-  private AutoShareRecordConsumer autoShareRecordConsumer;
+  private AutoShareConsumer autoShareConsumer;
 
   @Scheduled(cron = "0 0 3 * * ?")
   public void get() {
@@ -53,20 +55,25 @@ public class AutoShareJob {
     for (ShareRecord shareRecord : shareRecordList) {
       // 失效的链接
       if (ExpiredTypeEnum.INVALID.getValue().equals(shareRecord.getExpiredType())) {
-        String fsIds = shareRecord.getFsIds();
-        autoShareRecordProducer.asyncSend(
-          // 去除分享 ID 的 []，并转换为数组
-          fsIds.substring(1, fsIds.length() - 1).split(","), new SendCallback() {
-            @Override
-            public void onSuccess(SendResult sendResult) {
-              log.info("[AutoShareRecordProducer] 发送失效链接的分享文件 ID [{}] 到 MQ 成功！", fsIds);
-            }
-
-            @Override
-            public void onException(Throwable e) {
-              log.error("[AutoShareRecordProducer] 发送失效链接的分享文件 ID [{}] 到 MQ 失败！", fsIds, e);
-            }
-          });
+        String fsIdsStr = shareRecord.getFsIds();
+        // 去除分享 ID 的 []，并转换为数组
+        List<Long> fsIds = new ArrayList<>();
+        for (String fsIdStr : fsIdsStr.substring(1, fsIdsStr.length() - 1).split(",")) {
+          Long fsId = NumberUtils.parseLong(fsIdStr);
+          if (fsId > 0) {
+            fsIds.add(fsId);
+          }
+        }
+        autoShareProducer.asyncSend(fsIds, new SendCallback() {
+          @Override
+          public void onSuccess(SendResult sendResult) {
+            log.info("[AutoShareRecordProducer] 发送失效链接的分享文件 ID [{}] 到 MQ 成功！", fsIdsStr);
+          }
+          @Override
+          public void onException(Throwable e) {
+            log.error("[AutoShareRecordProducer] 发送失效链接的分享文件 ID [{}] 到 MQ 失败！", fsIdsStr, e);
+          }
+        });
       }
     }
   }
