@@ -1065,7 +1065,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
    */
   public static String[] convertWeeks(@NotNull String weeks, @NotNull String splitRegex) {
     // 去除星期字符串中除了 1-7 和 , 之外的字符
-    if (RegExUtils.isMatchedByGroup0("[^,1-7]*", weeks)) {
+    if (RegExUtils.isMatch("[^,1-7]*", weeks)) {
       weeks = weeks.replaceAll("[^,1-7]*", "");
     }
     if (StringUtils.isBlank(weeks)) {
