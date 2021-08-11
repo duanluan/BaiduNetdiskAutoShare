@@ -5,10 +5,7 @@ import com.duanluan.autoshare.baidu.config.BaiduConfig;
 import com.duanluan.autoshare.baidu.constants.ErrnoConstant;
 import com.duanluan.autoshare.baidu.constants.HeaderConstant;
 import com.duanluan.autoshare.baidu.entity.ShareRecord;
-import com.duanluan.autoshare.baidu.entity.ro.BaseRO;
-import com.duanluan.autoshare.baidu.entity.ro.LoginStatusRO;
-import com.duanluan.autoshare.baidu.entity.ro.ShareRecordRO;
-import com.duanluan.autoshare.baidu.entity.ro.ShareSetRO;
+import com.duanluan.autoshare.baidu.entity.ro.*;
 import com.ejlchina.okhttps.FastjsonMsgConvertor;
 import com.ejlchina.okhttps.HTTP;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -64,7 +62,7 @@ public class BaiduNetdiskUtils {
     if (objRO == null || (errno = objRO.getErrno()) == null || errno != 0) {
       if (errno != null) {
         if (ErrnoConstant.LOGIN_FAILURE.equals(errno)) {
-          log.error("无效登录，请重新登录！");
+          log.error("无效登录或 bdstoken 错误！");
         }
       } else if (StringUtils.isNotBlank(errorMsg)) {
         log.error(errorMsg + (objRO != null ? objRO.getShowMsg() : ""));
@@ -156,10 +154,10 @@ public class BaiduNetdiskUtils {
    * @param logid
    * @param pwd      密码
    * @param fsIds    分享的文件 ID 数组
-   * @return 分享链接
+   * @return 分享链接响应结果
    */
-  public String shareSet(String bdstoken, String logid, String pwd, List<Long> fsIds) {
-    Map<String, Object> paramMap = new HashMap<>();
+  public ShareSetRO shareSet(String bdstoken, String logid, String pwd, List<Long> fsIds) {
+    Map<String, Object> paramMap = new HashMap<>(5);
     paramMap.put("channel_list", new String[]{});
     paramMap.put("period", 0);
     paramMap.put("pwd", pwd);
@@ -182,7 +180,7 @@ public class BaiduNetdiskUtils {
       // .addHeader(HeaderConstant.ACCEPT_ENCODING, "gzip, deflate, br")
       .addHeader(HeaderConstant.ACCEPT_LANGUAGE, "zh-CN,zh;q=0.9,en;q=0.8,zh-TW;q=0.7")
       .addHeader(HeaderConstant.CONNECTION, "keep-alive")
-      .addHeader(HeaderConstant.CONTENT_LENGTH, String.valueOf(JSON.toJSONString(paramMap).length()))
+      // .addHeader(HeaderConstant.CONTENT_LENGTH, String.valueOf(JSON.toJSONString(paramMap).length()))
       .addHeader(HeaderConstant.CONTENT_TYPE, "application/x-www-form-urlencoded; charset=UTF-8")
       .addHeader(HeaderConstant.COOKIE, cookie)
       .addHeader(HeaderConstant.HOST, HOST)
@@ -195,8 +193,58 @@ public class BaiduNetdiskUtils {
       .addHeader(HeaderConstant.X_REQUESTED_WITH, "XMLHttpRequest")
       .post().getBody().toBean(ShareSetRO.class);
     if (checkErrno(shareSetRO, "分享失败！")) {
-      return shareSetRO.getLink();
+      return shareSetRO;
     }
     return null;
   }
+
+  /**
+   * 取消分享
+   *
+   * @param bdstoken
+   * @param shareidList 取消分享的分享 ID 数组
+   * @return 是否取消分享成功
+   */
+  public boolean shareCancel(String bdstoken, List<String> shareidList) {
+    Map<String, Object> paramMap = new HashMap<>(1);
+    paramMap.put("shareid_list", shareidList);
+
+    ShareCancelRO shareCancelRO = HTTP_OBJ.sync("/share/cancel" +
+      "?channel=" + baiduConfig.getChannel() +
+      "&bdstoken=" + bdstoken +
+      "&clienttype=" + baiduConfig.getClienttype() +
+      "&app_id=" + baiduConfig.getAppId() +
+      "&web=" + baiduConfig.getWeb())
+      .addBodyPara(paramMap)
+      // 添加请求头
+      .addHeader(HeaderConstant.ACCEPT, "application/json, text/plain, */*")
+      // .addHeader(HeaderConstant.ACCEPT_ENCODING, "gzip, deflate, br")
+      .addHeader(HeaderConstant.ACCEPT_LANGUAGE, "zh-CN,zh;q=0.9,en;q=0.8,zh-TW;q=0.7")
+      .addHeader(HeaderConstant.CONNECTION, "keep-alive")
+      .addHeader(HeaderConstant.CONTENT_LENGTH, "22")
+      // .addHeader(HeaderConstant.CONTENT_LENGTH, String.valueOf(JSON.toJSONString(paramMap).length()))
+      .addHeader(HeaderConstant.CONTENT_TYPE, "application/x-www-form-urlencoded")
+      .addHeader(HeaderConstant.COOKIE, cookie)
+      .addHeader(HeaderConstant.HOST, HOST)
+      .addHeader(HeaderConstant.ORIGIN, BASE_URL)
+      .addHeader(HeaderConstant.REFERER, BASE_URL + "/disk/main")
+      .addHeader(HeaderConstant.SEC_FETCH_DEST, "empty")
+      .addHeader(HeaderConstant.SEC_FETCH_MODE, "cors")
+      .addHeader(HeaderConstant.SEC_FETCH_SITE, "same-origin")
+      .addHeader(HeaderConstant.USER_AGENT, USER_AGENT)
+      .addHeader(HeaderConstant.X_REQUESTED_WITH, "XMLHttpRequest")
+      .post().getBody().toBean(ShareCancelRO.class);
+    return checkErrno(shareCancelRO, "取消分享失败！");
+  }
+
+  public static void main(String[] args) {
+    Map<String, Object> map = new HashMap<>();
+    ArrayList<String> list = new ArrayList<>();
+    list.add("123");
+    map.put("a", list);
+    map.put("b", 123);
+    System.out.println(JSON.toJSONString(map));
+    System.out.println("%5B%224021848677%22%5D".length());
+  }
+
 }
