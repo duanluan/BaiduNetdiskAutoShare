@@ -1,22 +1,24 @@
 package com.duanluan.autoshare.baidu.job;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.duanluan.autoshare.baidu.entity.Account;
 import com.duanluan.autoshare.baidu.entity.ShareRecord;
+import com.duanluan.autoshare.baidu.entity.ro.ShareSetRO;
 import com.duanluan.autoshare.baidu.enums.ExpiredTypeEnum;
-import com.duanluan.autoshare.baidu.mq.consumer.AutoShareConsumer;
-import com.duanluan.autoshare.baidu.mq.producer.AutoShareProducer;
 import com.duanluan.autoshare.baidu.service.IAccountService;
+import com.duanluan.autoshare.baidu.service.IShareRecordService;
 import com.duanluan.autoshare.baidu.util.BaiduNetdiskUtils;
+import com.duanluan.autoshare.baidu.util.CollectionUtils;
 import com.duanluan.autoshare.baidu.util.NumberUtils;
+import com.duanluan.autoshare.baidu.util.RandomStringUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.rocketmq.client.producer.SendCallback;
-import org.apache.rocketmq.client.producer.SendResult;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -31,9 +33,9 @@ public class AutoShareJob {
   @Autowired
   private BaiduNetdiskUtils baiduNetdiskUtils;
   @Autowired
-  private AutoShareProducer autoShareProducer;
-  @Autowired
-  private AutoShareConsumer autoShareConsumer;
+  private IShareRecordService shareRecordService;
+  // @Autowired
+  // private AutoShareProducer autoShareProducer;
 
   @Scheduled(cron = "0 0 3 * * ?")
   public void get() {
@@ -52,34 +54,78 @@ public class AutoShareJob {
       return;
     }
 
+    List<ShareRecord> saveShareRecordList = new ArrayList<>();
     for (ShareRecord shareRecord : shareRecordList) {
-      // 失效的链接
+      // 失效链接
       if (ExpiredTypeEnum.INVALID.getValue().equals(shareRecord.getExpiredType())) {
-        String fsIdsStr = shareRecord.getFsIds();
-        // 去除分享 ID 的 []，并转换为数组
-        List<Long> fsIds = new ArrayList<>();
-        for (String fsIdStr : fsIdsStr.substring(1, fsIdsStr.length() - 1).split(",")) {
-          Long fsId = NumberUtils.parseLong(fsIdStr);
-          if (fsId > 0) {
-            fsIds.add(fsId);
+        // 失效链接是否已存在
+        ShareRecord shareRecordQuerier = new ShareRecord();
+        shareRecordQuerier.setShareId(shareRecord.getShareId());
+        if (shareRecordService.getOne(new QueryWrapper<>(shareRecordQuerier)) != null) {
+          // TODO 更新分享链接
+        } else {
+          String fsIdsStr = shareRecord.getFsIds();
+          // 去除分享 ID 的 []，并转换为数组
+          List<Long> fsIds = new ArrayList<>();
+          for (String fsIdStr : fsIdsStr.substring(1, fsIdsStr.length() - 1).split(",")) {
+            Long fsId = NumberUtils.parseLong(fsIdStr);
+            if (fsId > 0) {
+              fsIds.add(fsId);
+            }
           }
+          if (CollectionUtils.sizeIsEmpty(fsIds)) {
+            continue;
+          }
+          // 将分享链接存储到数据库
+          Collections.sort(fsIds);
+          shareRecord.setFsIds(StringUtils.join(fsIds, ","));
+          saveShareRecordList.add(shareRecord);
+          // if (shareRecordService.save(shareRecord)) {
+          //   // 将失效链接发送到 MQ
+          //   autoShareProducer.asyncSend(fsIds, new SendCallback() {
+          //     @Override
+          //     public void onSuccess(SendResult sendResult) {
+          //       log.info("[AutoShareRecordProducer] 发送分享文件 ID [{}] 的失效链接到 MQ 成功！", fsIdsStr);
+          //     }
+          //
+          //     @Override
+          //     public void onException(Throwable e) {
+          //       log.error("[AutoShareRecordProducer] 发送分享文件 ID [{}] 的失效链接到 MQ 失败！", fsIdsStr, e);
+          //     }
+          //   });
+          // }
         }
-        autoShareProducer.asyncSend(fsIds, new SendCallback() {
-          @Override
-          public void onSuccess(SendResult sendResult) {
-            log.info("[AutoShareRecordProducer] 发送失效链接的分享文件 ID [{}] 到 MQ 成功！", fsIdsStr);
-          }
-          @Override
-          public void onException(Throwable e) {
-            log.error("[AutoShareRecordProducer] 发送失效链接的分享文件 ID [{}] 到 MQ 失败！", fsIdsStr, e);
-          }
-        });
       }
     }
-  }
+    shareRecordService.saveBatch(saveShareRecordList);
 
-  @Scheduled(cron = "0 0 4 * * ?")
-  public void share() {
-    // autoShareRecordConsumer.onMessage();
+    List<ShareRecord> updateShareRecordList = new ArrayList<>();
+    // 获取已失效的分享链接
+    ShareRecord shareRecordQuerier = new ShareRecord();
+    shareRecordQuerier.setExpiredType(ExpiredTypeEnum.INVALID.getValue());
+    for (ShareRecord shareRecord : shareRecordService.list(new QueryWrapper<>(shareRecordQuerier))) {
+      // 取消分享原链接
+      baiduNetdiskUtils.shareCancel(account.getBdstoken(), Collections.singletonList(shareRecord.getShareId().toString()));
+      // 分享
+      String pwd = RandomStringUtils.randomAlphanumeric(4);
+      // ShareSetRO shareSetRO = baiduNetdiskUtils.shareSet(account.getBdstoken(), account.getLogid(), pwd, Arrays.stream(shareRecord.getFsIds().split(",")).map(NumberUtils::parseLong).collect(Collectors.toList()));
+      ShareSetRO shareSetRO = new ShareSetRO();
+      // 分享成功后
+      if (shareSetRO != null) {
+        // 更新已分享的
+        shareRecord.setPasswd(pwd);
+        shareRecord.setVCnt(0);
+        shareRecord.setDCnt(0);
+        shareRecord.setTCnt(0);
+        shareRecord.setCtime(shareSetRO.getCtime());
+        shareRecord.setExpiredType(shareSetRO.getExpiredType());
+        shareRecord.setExpiredTime(shareSetRO.getExpiredTime());
+        shareRecord.setShareId(shareSetRO.getShareId());
+        shareRecord.setShortlink(shareSetRO.getLink());
+        shareRecord.setShorturl(shareSetRO.getShorturl());
+        updateShareRecordList.add(shareRecord);
+      }
+    }
+    shareRecordService.updateBatchById(updateShareRecordList);
   }
 }

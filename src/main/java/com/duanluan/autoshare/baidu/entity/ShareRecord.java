@@ -19,7 +19,7 @@ public class ShareRecord implements Serializable {
    */
   private LocalDateTime ctime;
   /**
-   * 分享的文件 ID，[] 格式，逗号分隔
+   * 分享的文件 ID，逗号分隔
    */
   private String fsIds;
   /**

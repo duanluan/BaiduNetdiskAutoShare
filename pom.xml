@@ -21,10 +21,6 @@
       <id>aliyun</id>
       <url>https://maven.aliyun.com/repository/public</url>
     </repository>
-    <repository>
-      <id>jitpack.io</id>
-      <url>https://jitpack.io</url>
-    </repository>
   </repositories>
   <pluginRepositories>
     <pluginRepository>
@@ -112,11 +108,11 @@
       <artifactId>spring-boot-starter-freemarker</artifactId>
     </dependency>
 
-    <dependency>
-      <groupId>org.apache.rocketmq</groupId>
-      <artifactId>rocketmq-spring-boot-starter</artifactId>
-      <version>${rocketmq.version}</version>
-    </dependency>
+    <!--<dependency>-->
+    <!--  <groupId>org.apache.rocketmq</groupId>-->
+    <!--  <artifactId>rocketmq-spring-boot-starter</artifactId>-->
+    <!--  <version>${rocketmq.version}</version>-->
+    <!--</dependency>-->
   </dependencies>
 
   <build>
@@ -132,21 +128,6 @@
           <source>${java.version}</source>
           <target>${java.version}</target>
           <encoding>${project.build.sourceEncoding}</encoding>
-        <!--  &lt;!&ndash; 必须 &ndash;&gt;-->
-        <!--  <annotationProcessorPaths>-->
-        <!--    <path>-->
-        <!--      <groupId>com.github.liujingxing.rxhttp</groupId>-->
-        <!--      <artifactId>rxhttp-compiler</artifactId>-->
-        <!--      <version>${rxhttp.version}</version>-->
-        <!--    </path>-->
-        <!--  </annotationProcessorPaths>-->
-
-        <!--  &lt;!&ndash; RxJava 注解处理器，非必须 &ndash;&gt;-->
-        <!--  <annotationProcessors>-->
-        <!--    <annotationProcessor>-->
-        <!--      com.rxhttp.compiler.maven.AnnotationRxJava3Processor-->
-        <!--    </annotationProcessor>-->
-        <!--  </annotationProcessors>-->
         </configuration>
       </plugin>
     </plugins>

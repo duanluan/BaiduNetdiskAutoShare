@@ -9,7 +9,7 @@ public class ErrnoConstant {
   }
 
   /**
-   * 无效登录，请重新登陆
+   * 无效登录或 bdstoken 错误
    */
   public static final Integer LOGIN_FAILURE = -6;
 }
