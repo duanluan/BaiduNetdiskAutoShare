@@ -13,7 +13,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,6 +49,23 @@ public class BaiduNetdiskUtils {
   private static String cookie = "BIDUPSID=38FA060A427C9C0A04EE6D2B51460A07; PSTM=1620736448; __yjs_duid=1_ba620814a98f28f2a8bb6b26dbdc6de71620742800774; csrfToken=dARoK5oGj5GVqCtm54VVLRRJ; PANWEB=1; secu=1; BDSFRCVID=pNPOJeCT5G0Y_-Ted8r0bQDx1WOoTx5TTPjcTR5qJ04BtyCVgBR4EG0PtfN48G-bmaKgogKKL2OTHm_F_2uxOjjg8UtVJeC6EG0Ptf8g0M5; H_BDCLCKID_SF=tJk8_DPbJK-3fP36q4cBb-4WhmT22-us2grR2hcH0b61EnR_bTjobJ-93MrZ0fjPWDTiaKJjBMb1DbRMjUJUjMuF-fRKbfcpWDTm_q5TtUJMeCnTDMRh-l04XNbyKMnitIv9-pPKWhQrh459XP68bTkA5bjZKxtq3mkjbPbDfn028DKuDjtBD5JWjGRabK6aKC5bL6rJabC3eRu9XU6q2bDeQN3ke4Qa5CnDaUntLlbWhf3OjtTv0l0vWtv4WbbvLT7johRTWqR4epvqXxonDh83KJ5nQfodHCOO04jO5hvv8KoO3M7VBUKmDloOW-TB5bbPLUQF5l8-sq0x0bOte-bQXH_EJ5_ffnFH_C8Qb-3bKRopMtOhq4tehHRjWqO9WDTm-I5TtUTrKfbNb57KD-DuQhADLMRyQT-t-Ubx2JOxVC5ly60MLR0-LnjM3qDJ3mkjbPbDBD-WsT6PhtQvbP4syPRrJfRnWIjdKfA-b4ncjRcTehoM3xI8LNj405OTbIFO0KJzJCcjqR8ZDTK5DToP; BDSFRCVID_BFESS=pNPOJeCT5G0Y_-Ted8r0bQDx1WOoTx5TTPjcTR5qJ04BtyCVgBR4EG0PtfN48G-bmaKgogKKL2OTHm_F_2uxOjjg8UtVJeC6EG0Ptf8g0M5; H_BDCLCKID_SF_BFESS=tJk8_DPbJK-3fP36q4cBb-4WhmT22-us2grR2hcH0b61EnR_bTjobJ-93MrZ0fjPWDTiaKJjBMb1DbRMjUJUjMuF-fRKbfcpWDTm_q5TtUJMeCnTDMRh-l04XNbyKMnitIv9-pPKWhQrh459XP68bTkA5bjZKxtq3mkjbPbDfn028DKuDjtBD5JWjGRabK6aKC5bL6rJabC3eRu9XU6q2bDeQN3ke4Qa5CnDaUntLlbWhf3OjtTv0l0vWtv4WbbvLT7johRTWqR4epvqXxonDh83KJ5nQfodHCOO04jO5hvv8KoO3M7VBUKmDloOW-TB5bbPLUQF5l8-sq0x0bOte-bQXH_EJ5_ffnFH_C8Qb-3bKRopMtOhq4tehHRjWqO9WDTm-I5TtUTrKfbNb57KD-DuQhADLMRyQT-t-Ubx2JOxVC5ly60MLR0-LnjM3qDJ3mkjbPbDBD-WsT6PhtQvbP4syPRrJfRnWIjdKfA-b4ncjRcTehoM3xI8LNj405OTbIFO0KJzJCcjqR8ZDTK5DToP; BDUSS=VHYlRKR093M0RaVk5rd2dvUDJJQ1E4Z35jOUQ1ZVpXYUw4R0FtS2s0T0pqUmRoSVFBQUFBJCQAAAAAAAAAAAEAAACudR9klOCBeQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIkA8GCJAPBgZX; BDUSS_BFESS=VHYlRKR093M0RaVk5rd2dvUDJJQ1E4Z35jOUQ1ZVpXYUw4R0FtS2s0T0pqUmRoSVFBQUFBJCQAAAAAAAAAAAEAAACudR9klOCBeQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIkA8GCJAPBgZX; STOKEN=11dcff004b121208667340848d09f9066fe0ece25543c5f9ae1134dce8f7ad6d; BDORZ=B490B5EBF6F3CD402E515D22BCDA1598; BDCLND=hCRinD0JYNSuvv0MVThXQJi%2FnaVTgiwZ; Hm_lvt_7a3960b6f067eb0085b7f96ff5e660b0=1626167363,1626625313,1627016290,1627016526; Hm_lvt_fa0277816200010a74ab7d2895df481b=1627026387; Hm_lpvt_fa0277816200010a74ab7d2895df481b=1627026387; BAIDUID=3B5179A5740581B1FE67D47DE0263901:FG=1; H_WISE_SIDS=107320_110085_127969_164869_167970_175759_176399_176553_176677_177094_177371_177414_177550_178139_178329_178529_178623_179345_179402_179441_180119_180328_180407_180433_180436_180513_180641_180699_180750_180755_180757_180822_180890_180936_181107_181118_181219_181253_181260_181326_181401_181430_181433_181446_181585_181610_181631_181664_181670_181799_181940_182024_182066_182073_182076_182134_182273_182331_182366_182412; H_PS_PSSID=34304_34099_33966_31253_34279_33848_34073_34282_34111_26350_34215; BAIDUID_BFESS=3B5179A5740581B1FE67D47DE0263901:FG=1; delPer=0; PSINO=6; Hm_lpvt_7a3960b6f067eb0085b7f96ff5e660b0=1627113330; PANPSC=7249143043707563066%3AKkwrx6t0uHDzB70GPiWUKHlibiKzYuqjnZmfDpLowebAo6sidHFppgZuq6kOUHWCXt5%2FapUws1U86C122tNHOtrMDPdxxOv706AvTy5qeHhhBaVJALTttmM0MRXtmcWVBlOY6dvHjZN2TQaGfItAk1vKX4DMNpv6HhgzMjI7O4rZ81l%2BOzvAFl6rs7RhyW0Et2o1MmJi5hZ9bfFV5UX2VQ%3D%3D";
 
   /**
+   * 获取请求参数长度
+   *
+   * @param bodyParams 请求参数
+   * @return 请求参数长度
+   */
+  private static int getContentLength(Map<String, Object> bodyParams) {
+    String s = RegExUtils.replaceAll(JSON.toJSONString(bodyParams), "\\{", "%7B");
+    s = RegExUtils.replaceAll(s, "\"", "%22");
+    s = RegExUtils.replaceAll(s, ":", "%3A");
+    s = RegExUtils.replaceAll(s, "\\[", "%5B");
+    s = RegExUtils.replaceAll(s, "\\]", "%5D");
+    s = RegExUtils.replaceAll(s, ",", "%2C");
+    s = RegExUtils.replaceAll(s, "}", "%7D");
+    return s.length();
+  }
+
+  /**
    * 检查状态码
    *
    * @param objRO    响应结果对象
@@ -62,7 +78,7 @@ public class BaiduNetdiskUtils {
     if (objRO == null || (errno = objRO.getErrno()) == null || errno != 0) {
       if (errno != null) {
         if (ErrnoConstant.LOGIN_FAILURE.equals(errno)) {
-          log.error("无效登录或 bdstoken 错误！");
+          log.error("Cookie 或 bdstoken 错误！");
         }
       } else if (StringUtils.isNotBlank(errorMsg)) {
         log.error(errorMsg + (objRO != null ? objRO.getShowMsg() : ""));
@@ -127,7 +143,6 @@ public class BaiduNetdiskUtils {
       "&order=ctime&desc=1")
       // 添加请求头
       .addHeader(HeaderConstant.ACCEPT, "application/json, text/plain, */*")
-      // .addHeader(HeaderConstant.ACCEPT_ENCODING, "gzip, deflate, br")
       .addHeader(HeaderConstant.ACCEPT_LANGUAGE, "zh-CN,zh;q=0.9,en;q=0.8,zh-TW;q=0.7")
       .addHeader(HeaderConstant.CONNECTION, "keep-alive")
       .addHeader(HeaderConstant.COOKIE, cookie)
@@ -157,12 +172,12 @@ public class BaiduNetdiskUtils {
    * @return 分享链接响应结果
    */
   public ShareSetRO shareSet(String bdstoken, String logid, String pwd, List<Long> fsIds) {
-    Map<String, Object> paramMap = new HashMap<>(5);
-    paramMap.put("channel_list", new String[]{});
-    paramMap.put("period", 0);
-    paramMap.put("pwd", pwd);
-    paramMap.put("schannel", 4);
-    paramMap.put("fid_list", fsIds);
+    Map<String, Object> paramsMap = new HashMap<>(5);
+    paramsMap.put("channel_list", new String[]{});
+    paramsMap.put("period", 0);
+    paramsMap.put("pwd", pwd);
+    paramsMap.put("schannel", 4);
+    paramsMap.put("fid_list", fsIds);
 
     ShareSetRO shareSetRO = HTTP_OBJ.sync("/share/set" +
       "?channel=" + baiduConfig.getChannel() +
@@ -174,13 +189,12 @@ public class BaiduNetdiskUtils {
       "&bdstoken=" + bdstoken +
       "&logid=" + logid +
       "&clienttype=" + baiduConfig.getClienttype())
-      .addBodyPara(paramMap)
+      .addBodyPara(paramsMap)
       // 添加请求头
       .addHeader(HeaderConstant.ACCEPT, "*/*")
-      // .addHeader(HeaderConstant.ACCEPT_ENCODING, "gzip, deflate, br")
       .addHeader(HeaderConstant.ACCEPT_LANGUAGE, "zh-CN,zh;q=0.9,en;q=0.8,zh-TW;q=0.7")
       .addHeader(HeaderConstant.CONNECTION, "keep-alive")
-      // .addHeader(HeaderConstant.CONTENT_LENGTH, String.valueOf(JSON.toJSONString(paramMap).length()))
+      .addHeader(HeaderConstant.CONTENT_LENGTH, String.valueOf(getContentLength(paramsMap)))
       .addHeader(HeaderConstant.CONTENT_TYPE, "application/x-www-form-urlencoded; charset=UTF-8")
       .addHeader(HeaderConstant.COOKIE, cookie)
       .addHeader(HeaderConstant.HOST, HOST)
@@ -206,8 +220,8 @@ public class BaiduNetdiskUtils {
    * @return 是否取消分享成功
    */
   public boolean shareCancel(String bdstoken, List<String> shareidList) {
-    Map<String, Object> paramMap = new HashMap<>(1);
-    paramMap.put("shareid_list", shareidList);
+    Map<String, Object> paramsMap = new HashMap<>(1);
+    paramsMap.put("shareid_list", shareidList);
 
     ShareCancelRO shareCancelRO = HTTP_OBJ.sync("/share/cancel" +
       "?channel=" + baiduConfig.getChannel() +
@@ -215,14 +229,12 @@ public class BaiduNetdiskUtils {
       "&clienttype=" + baiduConfig.getClienttype() +
       "&app_id=" + baiduConfig.getAppId() +
       "&web=" + baiduConfig.getWeb())
-      .addBodyPara(paramMap)
+      .addBodyPara(paramsMap)
       // 添加请求头
       .addHeader(HeaderConstant.ACCEPT, "application/json, text/plain, */*")
-      // .addHeader(HeaderConstant.ACCEPT_ENCODING, "gzip, deflate, br")
       .addHeader(HeaderConstant.ACCEPT_LANGUAGE, "zh-CN,zh;q=0.9,en;q=0.8,zh-TW;q=0.7")
       .addHeader(HeaderConstant.CONNECTION, "keep-alive")
-      .addHeader(HeaderConstant.CONTENT_LENGTH, "22")
-      // .addHeader(HeaderConstant.CONTENT_LENGTH, String.valueOf(JSON.toJSONString(paramMap).length()))
+      .addHeader(HeaderConstant.CONTENT_LENGTH, String.valueOf(getContentLength(paramsMap)))
       .addHeader(HeaderConstant.CONTENT_TYPE, "application/x-www-form-urlencoded")
       .addHeader(HeaderConstant.COOKIE, cookie)
       .addHeader(HeaderConstant.HOST, HOST)
@@ -236,15 +248,4 @@ public class BaiduNetdiskUtils {
       .post().getBody().toBean(ShareCancelRO.class);
     return checkErrno(shareCancelRO, "取消分享失败！");
   }
-
-  public static void main(String[] args) {
-    Map<String, Object> map = new HashMap<>();
-    ArrayList<String> list = new ArrayList<>();
-    list.add("123");
-    map.put("a", list);
-    map.put("b", 123);
-    System.out.println(JSON.toJSONString(map));
-    System.out.println("%5B%224021848677%22%5D".length());
-  }
-
 }
